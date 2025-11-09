@@ -26,3 +26,12 @@ clean-targets:         # directories to be removed by `dbt clean`
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
+
+models:
+  spending_dbt:
+    src:
+      +materialized: view
+    stg:
+      +materialized: view
+    mart:
+      +materialized: table
