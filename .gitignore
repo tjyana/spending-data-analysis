@@ -13,3 +13,6 @@ logs/
 *.json
 .env
 .env.*
+
+# Local dbt config
+user.yml
