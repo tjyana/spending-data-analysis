@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: raw_spending
+    database: spending-data-analysis
+    schema: raw_spending          # BigQuery dataset name
+    tables:
+      - name: expense_tracker_responses
