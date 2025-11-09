@@ -1,2 +1,2 @@
 select * 
-from ref {{ ref('stg_add_derived_columns') }}
+from {{ ref('stg_add_derived_columns') }}

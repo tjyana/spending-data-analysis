@@ -5,3 +5,14 @@
 -- Financial Operations	Finance & Fees, Miscellaneous	                Meta layer (money management, irregulars)
 
 -- This makes your dashboard summaries much more meaningful — e.g., “40% of my spending goes to Joy & Exploration, but only 10% to Self-Care.”
+
+select *
+from {{ ref('stg_add_derived_columns') }}
+
+-- group by lifestyle domain
+-- group by categories to group
+-- group by insight
+
+-- group by lifestyle domain
+-- group by categories to group
+-- group by insight
