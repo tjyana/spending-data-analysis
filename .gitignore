@@ -1,0 +1,15 @@
+# Python / venv
+.venv/
+__pycache__/
+*.pyc
+
+# dbt build artifacts
+target/
+dbt_packages/
+logs/
+
+# Credentials / env
+.gcp/
+*.json
+.env
+.env.*

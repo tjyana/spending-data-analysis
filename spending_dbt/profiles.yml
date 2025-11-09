@@ -1,0 +1,26 @@
+spending_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: spending-data-analysis         # your GCP project ID
+      dataset: spending_dev                   # dbt models go here (dev)
+      keyfile: /Users/yanagitsuru.taro/.gcp/spending-sa.json
+      location: asia-northeast1               # adjust if needed
+      threads: 4
+      timeout_seconds: 300
+      priority: interactive
+      retries: 1
+
+    prod:
+      type: bigquery
+      method: service-account
+      project: spending-data-analysis
+      dataset: spending_prod                  # dbt models go here (prod)
+      keyfile: /Users/yanagitsuru.taro/.gcp/spending-sa.json
+      location: asia-northeast1
+      threads: 4
+      timeout_seconds: 300
+      priority: interactive
+      retries: 1
