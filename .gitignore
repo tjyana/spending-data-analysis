@@ -15,4 +15,4 @@ logs/
 .env.*
 
 # Local dbt config
-user.yml
+.user.yml
