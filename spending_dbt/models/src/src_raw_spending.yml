@@ -5,4 +5,4 @@ sources:
     database: spending-data-analysis
     schema: raw_spending          # BigQuery dataset name
     tables:
-      - name: expense_tracker_responses
+      - name: expense_tracker
