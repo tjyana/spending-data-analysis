@@ -28,9 +28,10 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 
 models:
-  src:
-    +materialized: view
-  stg:
-    +materialized: view
-  mart:
-    +materialized: table
+  spending_dbt:
+    src:
+      +materialized: view
+    stg:
+      +materialized: view
+    mrt:
+      +materialized: table
