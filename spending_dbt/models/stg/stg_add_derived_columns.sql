@@ -14,6 +14,13 @@ src as (
 income_expense as (
     select 
         timestamp_datetime,
+        date(timestamp_datetime) as transaction_date,
+        format_date('%m', timestamp_datetime) as transaction_month,
+        format_date('%a', timestamp_datetime) as transaction_day_of_week,
+        case 
+            when regexp_contains(format_date('%a', timestamp_datetime), r'Sat|Sun') then 1
+            else 0
+        end as is_weekend,
         amount,
         case when transaction_type = '💰income💰' then amount else 0 end as income,
         case when transaction_type = 'expense' then -amount else 0 end as expense,
