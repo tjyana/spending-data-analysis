@@ -22,19 +22,34 @@ derived_columns as (
         date(timestamp_datetime) as transaction_date,
         format_datetime('%m', timestamp_datetime) as transaction_month,
         format_datetime('%a', timestamp_datetime) as transaction_day_of_week,
+        format_datetime('%m/%Y', timestamp_datetime) as transaction_month_year,
         case 
             when regexp_contains(format_date('%a', timestamp_datetime), r'Sat|Sun') then 1
             else 0
         end as is_weekend,
         amount,
+        transaction_type,
         case when transaction_type = '💰income💰' then amount else 0 end as income,
         case when transaction_type = 'expense' then -amount else 0 end as expense,
         payment_method,
         payee,
+        -- subs. maybe make a diff CTE for this later
         case 
             when regexp_contains(lower(payee), r'[Ll][Ii][Nn][Ee]\s*[Mm][Aa][Nn]') then 'Line Man'
-            when regexp_contains(lower(payee), r'chat\s*gpt') then 'ChatGPT'
+            when regexp_contains(lower(payee), r'OPENAI') then 'OpenAI'
             when regexp_contains(lower(payee), r'ｳｴﾙﾊﾟ-ｸ') then 'Welpark'
+            when regexp_contains(lower(payee), r'セブン|ｾﾌﾞﾝ') then '7-11'
+            when regexp_contains(lower(payee), r'ローソン|ﾛｰｿﾝ') then 'Lawson'
+            when regexp_contains(lower(payee), r'ファミリーマート') then 'Family Mart'
+            when regexp_contains(lower(payee), r'東京ガス') then 'Tokyo Gas'
+            when regexp_contains(lower(payee), r'ﾊﾟｽﾓ') then 'PASMO'
+            when regexp_contains(lower(payee), r'ﾌﾟﾗｲﾑｶｲﾋ') then 'Amazon Prime'
+            when regexp_contains(lower(payee), r'ソフトバンク') then 'Softbank'
+            when regexp_contains(lower(payee), r'SUNO INC') then 'Suno'
+            when regexp_contains(lower(payee), r'ココカラファインアプリ') then 'Cocokara Fine'
+            when regexp_contains(lower(payee), r'ｼﾞﾔﾊﾟﾝﾋﾞﾊﾞﾚﾂｼﾞ') then 'Vending Machine'
+            when regexp_contains(lower(payee), r'ﾌﾘﾎ-ﾚｽ') then 'Frijoles'
+            when regexp_contains(lower(payee), r'スマートフィット') then 'Smart Fit'
             else payee
         end as payee_cleaned,
         item,
@@ -59,6 +74,46 @@ derived_columns as (
         value_rating,
         notes
     from src
+),
+
+fill_ins as (
+    select 
+        timestamp_datetime,
+        transaction_date,
+        transaction_month,
+        transaction_month_year,
+        transaction_day_of_week,
+        is_weekend,
+        amount,
+        transaction_type,
+        income,
+        expense,
+        payment_method,
+        case
+            when payment_method is null and payee like '%ＶＩＳＡ%' and not payee like '%ﾓﾊﾞｲﾙﾊﾟｽﾓﾁﾔ-ｼﾞ%' THEN 'Credit Card' 
+            when payment_method is null and payee like '%ＪＣＢ%' then 'QuicPay'
+            when payment_method is null and regexp_contains(lower(payee), r'pasmo|ﾓﾊﾞｲﾙﾊﾟｽﾓﾁﾔ-ｼﾞ')then 'Apple Pay'
+            when payment_method is null and regexp_contains(lower(payee), r'スマートフィット|ソフトバンク|モバイル|Amazon') then 'Credit Card'
+            else payment_method
+        end as payment_method_standardized,
+        payee,
+        payee_cleaned,
+        item,
+        category,
+        category_standardized,
+        tags,
+        food_details,
+        hobby_details,
+        trip_details,
+        social,
+        store_type,
+        store_type_standardized,
+        purchase_channel,
+        essentiality,
+        recurrence_type,
+        value_rating,
+        notes
+    from derived_columns
 )
 
-select * from derived_columns
+select * from fill_ins
