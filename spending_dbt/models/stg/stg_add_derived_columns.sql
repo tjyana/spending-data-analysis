@@ -29,8 +29,14 @@ derived_columns as (
         end as is_weekend,
         amount,
         transaction_type,
-        case when transaction_type = '💰income💰' then amount else 0 end as income,
-        case when transaction_type = 'expense' then -amount else 0 end as expense,
+        case 
+            when transaction_type = '💰income💰' then amount 
+            else 0 
+        end as income,
+        case 
+            when transaction_type = 'expense' then -amount 
+            else 0 
+        end as expense,
         payment_method,
         payee,
         -- subs. maybe make a diff CTE for this later
@@ -96,23 +102,41 @@ fill_ins as (
             when regexp_contains(payee, r'ﾓﾊﾞｲﾙﾊﾟｽﾓﾁﾔ-ｼﾞ') then 'Apple Pay'
             when regexp_contains(payee, r'楽天ＳＰ') then 'Rakuten Pay'
             else payment_method
-        end as payment_method_standardized,
+        end as payment_method_complete,
         payee,
         payee_cleaned,
         item,
         category,
         category_standardized,
+                -- category_complete
+                -- case when for credit card statements
+                -- case when for october
         tags,
+                -- tags_complete
+                -- case when for credit card statements
         food_details,
         hobby_details,
         trip_details,
         social,
         store_type,
         store_type_standardized,
+                -- store_type_complete
+                -- for credit card statements
+                -- for before november
+
         purchase_channel,
+            -- for credit card statements
+            -- for before november
+            -- just do online for whatever, and then else in-store
         essentiality,
+            -- this might be tough. decide later
         recurrence_type,
+            -- recurrence_type_complete
+            -- for credit card statements
+            -- for before november
+            -- should be easy. based off category?
         value_rating,
+            -- changed in november. might be tough
         notes
     from derived_columns
 )
