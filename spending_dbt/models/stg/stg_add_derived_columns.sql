@@ -90,10 +90,11 @@ fill_ins as (
         expense,
         payment_method,
         case
-            when payment_method is null and payee like '%ＶＩＳＡ%' and not payee like '%ﾓﾊﾞｲﾙﾊﾟｽﾓﾁﾔ-ｼﾞ%' THEN 'Credit Card' 
-            when payment_method is null and payee like '%ＪＣＢ%' then 'QuicPay'
-            when payment_method is null and regexp_contains(lower(payee), r'pasmo|ﾓﾊﾞｲﾙﾊﾟｽﾓﾁﾔ-ｼﾞ')then 'Apple Pay'
-            when payment_method is null and regexp_contains(lower(payee), r'スマートフィット|ソフトバンク|モバイル|Amazon') then 'Credit Card'
+            -- for credit card statements
+            when regexp_contains(payee, r'ＶＩＳＡ|ソフトバンク|スマートフィット１００|LINEPAY|東京ガス|利用国US|楽天モバイル通信料') then 'Credit Card'
+            when regexp_contains(payee, r'ＪＣＢ|ｼﾞﾔﾊﾟﾝﾋﾞﾊﾞﾚﾂｼﾞﾎ-|ｳｴﾙﾊﾟ-ｸ') then 'QuicPay'
+            when regexp_contains(payee, r'ﾓﾊﾞｲﾙﾊﾟｽﾓﾁﾔ-ｼﾞ') then 'Apple Pay'
+            when regexp_contains(payee, r'楽天ＳＰ') then 'Rakuten Pay'
             else payment_method
         end as payment_method_standardized,
         payee,
