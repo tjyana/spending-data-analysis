@@ -78,7 +78,8 @@ derived_columns as (
         essentiality,
         recurrence_type,
         value_rating,
-        notes
+        notes,
+        source_system
     from src
 ),
 
@@ -137,7 +138,8 @@ fill_ins as (
             -- should be easy. based off category?
         value_rating,
             -- changed in november. might be tough
-        notes
+        notes,
+        source_system
     from derived_columns
 )
 
