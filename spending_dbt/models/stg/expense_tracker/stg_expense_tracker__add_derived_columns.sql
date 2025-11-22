@@ -13,7 +13,7 @@ with
 
 src as (
     select * 
-    from {{ ref('src_raw_spending') }}
+    from {{ ref('src_expense_tracker__raw_spending') }}
 ), 
 
 derived_columns as (

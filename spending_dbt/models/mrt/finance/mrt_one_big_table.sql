@@ -1,2 +1,2 @@
 select * 
-from {{ ref('stg_add_derived_columns') }}
+from {{ ref('int_finance__transactions_union') }}
