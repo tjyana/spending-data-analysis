@@ -21,7 +21,8 @@ with source as  (
         essentiality, 
         recurrence_type,
         value_rating,
-        Random_memos
+        Random_memos,
+        'expense_tracker' as source_system
     from {{ source('raw_spending', 'expense_tracker') }}
     
 ), 
@@ -45,7 +46,8 @@ renamed as (
         essentiality, 
         recurrence_type,
         value_rating,
-        Random_memos as notes
+        Random_memos as notes,
+        source_system
     from source
 ),
 
@@ -61,18 +63,6 @@ normalized as (
             when regexp_contains(timestamp_raw, r'\d{1,2}:\d{2}:\d{2}') then parse_datetime('%m/%d/%Y %H:%M:%S', timestamp_raw)
             else NULL
         end as timestamp_datetime,
-
-        --     when timestamp_raw not like '% %' then
-        --         concat(
-        --             substr(timestamp_raw, 6, 2), 
-        --             '/', 
-        --             substr(timestamp_raw, 9, 2),
-        --             '/', 
-        --             substr(timestamp_raw, 1, 4),
-        --             ' 00:00:00'
-        --         )
-        --     else timestamp_raw
-        -- end as timestamp_normalized,
         transaction_type,
         amount, 
         trim(payment_method) as payment_method,
@@ -89,7 +79,8 @@ normalized as (
         trim(essentiality) as essentiality, 
         trim(recurrence_type) as recurrence_type,
         value_rating as value_rating,
-        trim(notes) as notes
+        trim(notes) as notes,
+        source_system
     from renamed
 ),
 
@@ -112,7 +103,8 @@ type_cast as (
         cast(essentiality as string) as essentiality,
         cast(recurrence_type as string) as recurrence_type,
         cast(value_rating as int64) as value_rating,
-        cast(notes as string) as notes
+        cast(notes as string) as notes,
+        cast(source_system as string) as source_system
     from normalized
 )
 
