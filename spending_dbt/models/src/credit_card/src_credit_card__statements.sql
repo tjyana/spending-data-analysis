@@ -46,15 +46,7 @@ renamed as (
 normalized as (
     select
         -- to deal with 2025/10/20 format
-        case
-            -- YYYY/MM/DD (year-first)
-            when regexp_contains(timestamp_raw, r'^\d{4}/') then parse_datetime('%Y/%m/%d %H:%M:%S', concat(timestamp_raw, ' 00:00:00'))
-            -- M/D/YYYY or MM/DD/YYYY (month-first, no time)
-            when regexp_contains(timestamp_raw, r'^\d{1,2}/\d{1,2}/\d{4}$') then parse_datetime('%m/%d/%Y %H:%M:%S', concat(timestamp_raw, ' 00:00:00'))
-            -- Has time portion (MM/DD/YYYY HH:MM:SS)
-            when regexp_contains(timestamp_raw, r'\d{1,2}:\d{2}:\d{2}') then parse_datetime('%m/%d/%Y %H:%M:%S', timestamp_raw)
-            else NULL
-        end as timestamp_datetime,
+        datetime(timestamp_raw) as timestamp_datetime,
         null as transaction_type,
         amount, 
         null as payment_method,
@@ -87,16 +79,17 @@ type_cast as (
         cast(item as string) as item,
         cast(category as string) as category, 
         cast(tags as string) as tags,
-        cast(food_details as string) as food_details,
-        cast(hobby_details as string) as hobby_details,
-        cast(trip_details as string) as trip_details,
+        -- cast(food_details as string) as food_details,
+        -- cast(hobby_details as string) as hobby_details,
+        -- cast(trip_details as string) as trip_details,
         cast(social as string) as social,
         cast(store_type as string) as store_type,
         cast(purchase_channel as string) as purchase_channel,
         cast(essentiality as string) as essentiality,
         cast(recurrence_type as string) as recurrence_type,
         cast(value_rating as int64) as value_rating,
-        cast(notes as string) as notes
+        cast(notes as string) as notes,
+        cast(source_system as string) as source_system
     from normalized
 )
 
