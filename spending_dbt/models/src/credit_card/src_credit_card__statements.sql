@@ -15,7 +15,10 @@ with source as  (
         store_type,
         purchase_channel,
         recurrence_type,
-        Random_memos
+        Random_memos,
+        payment_method,
+        item,
+        'credit_card' as source_system
     from {{ source('raw_spending', 'credit_card_statements') }}
     
 ), 
@@ -33,7 +36,10 @@ renamed as (
         store_type,
         purchase_channel,
         recurrence_type,
-        Random_memos as notes
+        Random_memos as notes,
+        payment_method,
+        item,
+        source_system
     from source
 ),
 
@@ -49,23 +55,25 @@ normalized as (
             when regexp_contains(timestamp_raw, r'\d{1,2}:\d{2}:\d{2}') then parse_datetime('%m/%d/%Y %H:%M:%S', timestamp_raw)
             else NULL
         end as timestamp_datetime,
-        transaction_type,
+        null as transaction_type,
         amount, 
-        trim(payment_method) as payment_method,
+        null as payment_method,
         trim(payee) as payee,
         trim(item) as item,
         trim(category) as category, 
         trim(tags) as tags,
-        trim(food_details) as food_details,
-        trim(hobby_details) as hobby_details,
-        trim(trip_details) as trip_details,
+        -- add the logic later in stg_derived columns
+        -- trim(food_details) as food_details,
+        -- trim(hobby_details) as hobby_details,
+        -- trim(trip_details) as trip_details,
         trim(social) as social,
         trim(store_type) as store_type,
         trim(purchase_channel) as purchase_channel,
         trim(essentiality) as essentiality, 
         trim(recurrence_type) as recurrence_type,
         value_rating as value_rating,
-        trim(notes) as notes
+        trim(notes) as notes,
+        trim(source_system) as source_system
     from renamed
 ),
 
