@@ -47,7 +47,7 @@ normalized as (
     select
         -- to deal with 2025/10/20 format
         datetime(timestamp_raw) as timestamp_datetime,
-        null as transaction_type,
+        'expense' as transaction_type,
         amount, 
         null as payment_method,
         trim(payee) as payee,
