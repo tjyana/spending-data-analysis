@@ -30,8 +30,18 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   spending_dbt:
     src:
-      +materialized: view
+      credit_card:
+        +materialized: view
+      expense_tracker:
+        +materialized: view
     stg:
-      +materialized: view
+      credit_card:
+        +materialized: view
+      expense_tracker:
+        +materialized: view
+    int:
+      finance:
+        +materialized: view
     mrt:
-      +materialized: table
+      finance:
+        +materialized: table
