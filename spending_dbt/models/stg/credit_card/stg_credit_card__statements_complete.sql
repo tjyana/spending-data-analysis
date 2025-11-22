@@ -42,7 +42,7 @@ derived_columns as (
         -- subs. maybe make a diff CTE for this later
         case 
             when regexp_contains(lower(payee), r'[Ll][Ii][Nn][Ee]\s*[Mm][Aa][Nn]') then 'Line Man'
-            when regexp_contains(lower(payee), r'OPENAI') then 'OpenAI'
+            when regexp_contains(payee, r'OPENAI') then 'OpenAI'
             when regexp_contains(lower(payee), r'ｳｴﾙﾊﾟ-ｸ') then 'Welpark'
             when regexp_contains(lower(payee), r'セブン|ｾﾌﾞﾝ') then '7-11'
             when regexp_contains(lower(payee), r'ローソン|ﾛｰｿﾝ') then 'Lawson'
@@ -51,12 +51,16 @@ derived_columns as (
             when regexp_contains(lower(payee), r'ﾊﾟｽﾓ') then 'PASMO'
             when regexp_contains(lower(payee), r'ﾌﾟﾗｲﾑｶｲﾋ') then 'Amazon Prime'
             when regexp_contains(lower(payee), r'ソフトバンク') then 'Softbank'
-            when regexp_contains(lower(payee), r'SUNO INC') then 'Suno'
+            when regexp_contains(payee, r'SUNO INC') then 'Suno'
             when regexp_contains(lower(payee), r'ココカラファインアプリ') then 'Cocokara Fine'
             when regexp_contains(lower(payee), r'ｼﾞﾔﾊﾟﾝﾋﾞﾊﾞﾚﾂｼﾞ') then 'Vending Machine'
             when regexp_contains(lower(payee), r'ﾌﾘﾎ-ﾚｽ') then 'Frijoles'
             when regexp_contains(lower(payee), r'スマートフィット') then 'Smart Fit'
-            else payee
+            when regexp_contains(payee, r'APPLE COM') then 'Apple'
+            when regexp_contains(payee, r'BOOKING') then 'Booking.com'
+            when regexp_contains(payee, r'NOKAIR') then 'Nok Air'
+            when regexp_contains(payee, r'サミット') then 'Summit'
+            else trim(regexp_replace(regexp_replace(payee, r'(ＶＩＳＡ海外利用|ＶＩＳＡ国内利用|楽天ＳＰ)', ''), r'\s+', ' '))
         end as payee_cleaned,
         item,
         category,
@@ -65,21 +69,6 @@ derived_columns as (
             else category
         end as category_standardized,
         tags,
-        case 
-            when regexp_contains(tags, r'^food: ')
-                then regexp_replace(tags, r'^[^:]+:\s*', '') 
-                else null 
-            end as food_details,
-        case 
-            when regexp_contains(tags, r'^hobby: ')
-                then regexp_replace(tags, r'^[^:]+:\s*', '') 
-                else null
-            end as hobby_details,
-        case    
-            when regexp_contains(tags, r'^trip: ')
-                then regexp_replace(tags, r'^[^:]+:\s*', '') 
-                else null 
-            end as trip_details,
         -- add finance_details later. with expense stg too
         social,
         store_type,
@@ -91,7 +80,8 @@ derived_columns as (
         essentiality,
         recurrence_type,
         value_rating,
-        notes
+        notes,
+        source_system
     from src
 ),
 
@@ -121,15 +111,23 @@ fill_ins as (
         item,
         category,
         category_standardized,
-                -- category_complete
-                -- case when for credit card statements
-                -- case when for october
+        case
+                -- case when for credit card statement
+            when regexp_contains(payee_cleaned, r'Line Man') then 'Miscellaneous & Gifts'
+            when regexp_contains(payee_cleaned, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
+            when regexp_contains(payee_cleaned, r'Welpark|Cocokara Fine') then 'Household Supplies'
+            when regexp_contains(payee_cleaned, r'7-11|Lawson|Family Mart|Vending Machine|Frijoles') then 'Dining & Cafes'
+            when regexp_contains(payee_cleaned, r'Tokyo Gas|Softbank') then 'Housing & Utilities'
+            when regexp_contains(payee_cleaned, r'PASMO') then 'Transportation'
+            when regexp_contains(payee_cleaned, r'Smart Fit') then 'Health & Wellness'
+            when regexp_contains(payee_cleaned, r'Summit') then 'Groceries'
+            else category_standardized
+        end as category_complete,
         tags,
-                -- tags_complete
-                -- case when for credit card statements
-        food_details,
-        hobby_details,
-        trip_details,
+        case 
+            when regexp_contains(payee_cleaned, r'7-11|Lawson|Family Mart|Vending Machine') then 'food: snack'
+            else tags
+        end as tags_complete,
         social,
         store_type,
         store_type_standardized,
@@ -150,8 +148,72 @@ fill_ins as (
             -- should be easy. based off category?
         value_rating,
             -- changed in november. might be tough
-        notes
+        notes,
+        source_system
     from derived_columns
+),
+
+derived_tags as (
+    select 
+        timestamp_datetime,
+        transaction_date,
+        transaction_month,
+        transaction_month_year,
+        transaction_day_of_week,
+        is_weekend,
+        amount,
+        transaction_type,
+        income,
+        expense,
+        payment_method,
+        payment_method_complete,
+        payee,
+        payee_cleaned,
+        item,
+        category,
+        category_standardized,
+        category_complete,
+        tags,
+        tags_complete,
+        case 
+            when regexp_contains(tags_complete, r'^food: ')
+                then regexp_replace(tags_complete, r'^[^:]+:\s*', '') 
+                else null 
+            end as food_details,
+        case 
+            when regexp_contains(tags_complete, r'^hobby: ')
+                then regexp_replace(tags_complete, r'^[^:]+:\s*', '') 
+                else null
+            end as hobby_details,
+        case    
+            when regexp_contains(tags_complete, r'^trip: ')
+                then regexp_replace(tags_complete, r'^[^:]+:\s*', '') 
+                else null 
+            end as trip_details,
+        social,
+        store_type,
+        store_type_standardized,
+                -- store_type_complete
+                -- for credit card statements
+                -- for before november
+
+        purchase_channel,
+            -- for credit card statements
+            -- for before november
+            -- just do online for whatever, and then else in-store
+        essentiality,
+            -- this might be tough. decide later
+        recurrence_type,
+            -- recurrence_type_complete
+            -- for credit card statements
+            -- for before november
+            -- should be easy. based off category?
+        value_rating,
+            -- changed in november. might be tough
+        notes,
+        source_system
+    from fill_ins
 )
 
-select * from fill_ins
+
+select * from derived_tags
