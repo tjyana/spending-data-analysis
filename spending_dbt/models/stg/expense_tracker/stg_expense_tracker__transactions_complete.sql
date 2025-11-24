@@ -148,7 +148,7 @@ fill_ins as (
                 -- for before november
 
         purchase_channel,
-        purchase_chanel as purchase_channel_complete,
+        purchase_channel as purchase_channel_complete,
             -- for credit card statements
             -- for before november
             -- just do online for whatever, and then else in-store

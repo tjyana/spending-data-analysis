@@ -113,19 +113,19 @@ fill_ins as (
         category_standardized,
         case
                 -- case when for credit card statement
-            when regexp_contains(payee_cleaned, r'Line Man') then 'Miscellaneous & Gifts'
-            when regexp_contains(payee_cleaned, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
-            when regexp_contains(payee_cleaned, r'Welpark|Cocokara Fine') then 'Household Supplies'
-            when regexp_contains(payee_cleaned, r'7-11|Lawson|Family Mart|Vending Machine|Frijoles') then 'Dining & Cafes'
-            when regexp_contains(payee_cleaned, r'Tokyo Gas|Softbank') then 'Housing & Utilities'
-            when regexp_contains(payee_cleaned, r'PASMO') then 'Transportation'
-            when regexp_contains(payee_cleaned, r'Smart Fit') then 'Health & Wellness'
-            when regexp_contains(payee_cleaned, r'Summit') then 'Groceries'
+            when regexp_contains(payee_standardized, r'Line Man') then 'Miscellaneous & Gifts'
+            when regexp_contains(payee_standardized, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
+            when regexp_contains(payee_standardized, r'Welpark|Cocokara Fine') then 'Household Supplies'
+            when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine|Frijoles') then 'Dining & Cafes'
+            when regexp_contains(payee_standardized, r'Tokyo Gas|Softbank') then 'Housing & Utilities'
+            when regexp_contains(payee_standardized, r'PASMO') then 'Transportation'
+            when regexp_contains(payee_standardized, r'Smart Fit') then 'Health & Wellness'
+            when regexp_contains(payee_standardized, r'Summit') then 'Groceries'
             else category_standardized
         end as category_complete,
         tags,
         case 
-            when regexp_contains(payee_cleaned, r'7-11|Lawson|Family Mart|Vending Machine') then 'food: snack'
+            when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine') then 'food: snack'
             else tags
         end as tags_complete,
         social,
@@ -168,7 +168,7 @@ final as (
         payment_method,
         payment_method_complete,
         payee,
-        payee_cleaned,
+        payee_standardized,
         item,
         category,
         category_standardized,
@@ -199,12 +199,13 @@ final as (
             when regexp_contains(payee_standardized, r'^Welpark') then 'Drugstore'
             when regexp_contains(payee_standardized, r'^7-11|Lawson|Family Mart') then 'Convenience Store'
             when regexp_contains(payee_standardized, r'^Summit') then 'Grocery Store'
+            when regexp_contains(payee_standardized, r'^Frijoles') then 'Restaurant / Food Stall' 
             else null 
         end as store_type_complete,
         purchase_channel,
         case 
             when regexp_contains(payee_standardized, r'^Line Man|OpenAI|Tokyo Gas|PASMO|Amazon|Softbank|Suno|Smart Fit|Apple|Booking|Nok|Summit') then 'Online'
-            when regexp_contains(payee_standardized, r'^Welpark|7-11|Lawson|Family Mart|Cocokara Fine|Vending Machine') then 'In-Store'
+            when regexp_contains(payee_standardized, r'^Welpark|7-11|Lawson|Family Mart|Cocokara Fine|Vending Machine|Frijoles') then 'In-Store'
             else null 
         end as purchase_channel_complete,
         essentiality,
@@ -218,7 +219,7 @@ final as (
         recurrence_type,
         case 
             when regexp_contains(payee_standardized, r'^OpenAI|Tokyo Gas|Amazon|Softbank|Suno|Smart Fit|Apple') then 'Subscription/Automatic'
-            when regexp_contains(payee_standardized, r'^Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit') then 'Variable / Occasional'
+            when regexp_contains(payee_standardized, r'^Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit|Frijoles') then 'Variable / Occasional'
             when regexp_contains(payee_standardized, r'^Booking|Nok') then 'One-Off'
             else null 
         end as recurrence_type_complete,
@@ -226,6 +227,7 @@ final as (
             -- for credit card statements
             -- for before november
             -- should be easy. based off category?
+        value_rating,
         value_rating as value_rating_complete,
             -- changed in november. might be tough
         notes,
