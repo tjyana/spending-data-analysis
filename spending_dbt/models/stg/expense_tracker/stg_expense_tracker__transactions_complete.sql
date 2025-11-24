@@ -56,6 +56,10 @@ derived_columns as (
             when regexp_contains(lower(payee), r'ｼﾞﾔﾊﾟﾝﾋﾞﾊﾞﾚﾂｼﾞ') then 'Vending Machine'
             when regexp_contains(lower(payee), r'ﾌﾘﾎ-ﾚｽ') then 'Frijoles'
             when regexp_contains(lower(payee), r'スマートフィット') then 'Smart Fit'
+            when regexp_contains(payee, r'APPLE COM') then 'Apple'
+            when regexp_contains(payee, r'BOOKING') then 'Booking.com'
+            when regexp_contains(payee, r'NOKAIR') then 'Nok Air'
+            when regexp_contains(payee, r'サミット') then 'Summit'
             else payee
         end as payee_cleaned,
         item,
@@ -109,34 +113,56 @@ fill_ins as (
         item,
         category,
         category_standardized,
+        case
+                -- case when for credit card statement
+            when regexp_contains(payee_cleaned, r'Line Man') then 'Miscellaneous & Gifts'
+            when regexp_contains(payee_cleaned, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
+            when regexp_contains(payee_cleaned, r'Welpark|Cocokara Fine') then 'Household Supplies'
+            when regexp_contains(payee_cleaned, r'7-11|Lawson|Family Mart|Vending Machine|Frijoles') then 'Dining & Cafes'
+            when regexp_contains(payee_cleaned, r'Tokyo Gas|Softbank') then 'Housing & Utilities'
+            when regexp_contains(payee_cleaned, r'PASMO') then 'Transportation'
+            when regexp_contains(payee_cleaned, r'Smart Fit') then 'Health & Wellness'
+            when regexp_contains(payee_cleaned, r'Summit') then 'Groceries'
+            else category_standardized
+        end as category_complete,
                 -- category_complete
                 -- case when for credit card statements
                 -- case when for october
         tags,
+        case 
+            when regexp_contains(payee_cleaned, r'7-11|Lawson|Family Mart|Vending Machine') then 'food: snack'
+            else tags
+        end as tags_complete,
                 -- tags_complete
                 -- case when for credit card statements
         food_details,
         hobby_details,
         trip_details,
         social,
+        social as social_complete,
         store_type,
         store_type_standardized,
+        store_type_standardized as store_type_complete,
                 -- store_type_complete
                 -- for credit card statements
                 -- for before november
 
         purchase_channel,
+        purchase_chanel as purchase_channel_complete,
             -- for credit card statements
             -- for before november
             -- just do online for whatever, and then else in-store
         essentiality,
+        essentiality as essentiality_complete,
             -- this might be tough. decide later
         recurrence_type,
+        recurrence_type as recurrence_type_complete,
             -- recurrence_type_complete
             -- for credit card statements
             -- for before november
             -- should be easy. based off category?
         value_rating,
+        value_rating as value_rating_complete,
             -- changed in november. might be tough
         notes,
         source_system

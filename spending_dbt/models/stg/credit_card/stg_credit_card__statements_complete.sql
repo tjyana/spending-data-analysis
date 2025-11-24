@@ -61,7 +61,7 @@ derived_columns as (
             when regexp_contains(payee, r'NOKAIR') then 'Nok Air'
             when regexp_contains(payee, r'サミット') then 'Summit'
             else trim(regexp_replace(regexp_replace(payee, r'(ＶＩＳＡ海外利用|ＶＩＳＡ国内利用|楽天ＳＰ)', ''), r'\s+', ' '))
-        end as payee_cleaned,
+        end as payee_standardized,
         item,
         category,
         case 
@@ -107,7 +107,7 @@ fill_ins as (
             else payment_method
         end as payment_method_complete,
         payee,
-        payee_cleaned,
+        payee_standardized,
         item,
         category,
         category_standardized,
@@ -153,7 +153,7 @@ fill_ins as (
     from derived_columns
 ),
 
-derived_tags as (
+final as (
     select 
         timestamp_datetime,
         transaction_date,
@@ -191,24 +191,42 @@ derived_tags as (
                 else null 
             end as trip_details,
         social,
+        social as social_complete,
         store_type,
         store_type_standardized,
-                -- store_type_complete
-                -- for credit card statements
-                -- for before november
-
+        case 
+            when regexp_contains(payee_standardized, r'^Line Man|OpenAI|Tokyo Gas|PASMO|Amazon|Softbank|Suno|Smart Fit|Apple|Booking|Nok') then 'Everything else'
+            when regexp_contains(payee_standardized, r'^Welpark') then 'Drugstore'
+            when regexp_contains(payee_standardized, r'^7-11|Lawson|Family Mart') then 'Convenience Store'
+            when regexp_contains(payee_standardized, r'^Summit') then 'Grocery Store'
+            else null 
+        end as store_type_complete,
         purchase_channel,
-            -- for credit card statements
-            -- for before november
-            -- just do online for whatever, and then else in-store
+        case 
+            when regexp_contains(payee_standardized, r'^Line Man|OpenAI|Tokyo Gas|PASMO|Amazon|Softbank|Suno|Smart Fit|Apple|Booking|Nok|Summit') then 'Online'
+            when regexp_contains(payee_standardized, r'^Welpark|7-11|Lawson|Family Mart|Cocokara Fine|Vending Machine') then 'In-Store'
+            else null 
+        end as purchase_channel_complete,
         essentiality,
-            -- this might be tough. decide later
+        -- can't take into account conbini so will have to mark
+        case 
+            when regexp_contains(payee_standardized, r'^Suno|Frijoles|Vending Machine') then 'Want'
+            when regexp_contains(payee_standardized, r'^Line Man|OpenAI|Amazon Prime|Apple|Booking|Nok|Smart Fit') then 'Nice-to-Have (Comfort Base)'
+            when regexp_contains(payee_standardized, r'^Tokyo Gas|PASMO|Softbank|Summit') then 'Need (Base)'
+            else null 
+        end as essentiality_complete,
         recurrence_type,
+        case 
+            when regexp_contains(payee_standardized, r'^OpenAI|Tokyo Gas|Amazon|Softbank|Suno|Smart Fit|Apple') then 'Subscription/Automatic'
+            when regexp_contains(payee_standardized, r'^Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit') then 'Variable / Occasional'
+            when regexp_contains(payee_standardized, r'^Booking|Nok') then 'One-Off'
+            else null 
+        end as recurrence_type_complete,
             -- recurrence_type_complete
             -- for credit card statements
             -- for before november
             -- should be easy. based off category?
-        value_rating,
+        value_rating as value_rating_complete,
             -- changed in november. might be tough
         notes,
         source_system
@@ -216,4 +234,4 @@ derived_tags as (
 )
 
 
-select * from derived_tags
+select * from final
