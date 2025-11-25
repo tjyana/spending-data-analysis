@@ -18,5 +18,6 @@ logs/
 .user.yml
 
 # files
-.pdf
-.csv
+*.pdf
+*.csv
+*.log
