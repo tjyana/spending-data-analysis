@@ -71,6 +71,9 @@ derived_columns as (
         category,
         case 
             when lower(trim(category)) = 'rent/utilities' then 'Housing & Utilities' 
+            when lower(trim(category)) = 'entertainment & subscriptions' then 'Media & Subscriptions'
+            when trim(category) = 'Hobbies (Coffee, Running, Plants)' then 'Hobbies'
+            when trim(category) = 'Miscellaneous / Gifts' then 'Miscellaneous & Gifts'
             else category
         end as category_standardized,
         tags,
@@ -120,6 +123,7 @@ fill_ins as (
         category_standardized,
         case
                 -- case when for credit card statement
+                -- keep Amazon out of this
             when regexp_contains(payee_standardized, r'Line Man') then 'Miscellaneous & Gifts'
             when regexp_contains(payee_standardized, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
             when regexp_contains(payee_standardized, r'Welpark|Cocokara Fine') then 'Household Supplies'
@@ -139,7 +143,7 @@ fill_ins as (
                 -- case when for october
         tags,
         case 
-            when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine') then 'food: snack'
+            when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine') and tags is null then 'food: snack'
             else tags
         end as tags_complete,
                 -- tags_complete

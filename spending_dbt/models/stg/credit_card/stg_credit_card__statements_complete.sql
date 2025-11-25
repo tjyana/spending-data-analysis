@@ -113,6 +113,7 @@ fill_ins as (
         category_standardized,
         case
                 -- case when for credit card statement
+                -- keep Amazon out of this
             when regexp_contains(payee_standardized, r'Line Man') then 'Miscellaneous & Gifts'
             when regexp_contains(payee_standardized, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
             when regexp_contains(payee_standardized, r'Welpark|Cocokara Fine') then 'Household Supplies'
