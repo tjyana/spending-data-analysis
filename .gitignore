@@ -16,3 +16,7 @@ logs/
 
 # Local dbt config
 .user.yml
+
+# files
+.pdf
+.csv
