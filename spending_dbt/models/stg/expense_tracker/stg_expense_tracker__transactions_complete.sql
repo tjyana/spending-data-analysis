@@ -42,7 +42,7 @@ derived_columns as (
         -- subs. maybe make a diff CTE for this later
         case 
             when regexp_contains(lower(payee), r'[Ll][Ii][Nn][Ee]\s*[Mm][Aa][Nn]') then 'Line Man'
-            when regexp_contains(lower(payee), r'OPENAI') then 'OpenAI'
+            when regexp_contains(lower(payee), r'openai') then 'OpenAI'
             when regexp_contains(lower(payee), r'ｳｴﾙﾊﾟ-ｸ') then 'Welpark'
             when regexp_contains(lower(payee), r'セブン|ｾﾌﾞﾝ') then '7-11'
             when regexp_contains(lower(payee), r'ローソン|ﾛｰｿﾝ') then 'Lawson'
@@ -50,18 +50,23 @@ derived_columns as (
             when regexp_contains(lower(payee), r'東京ガス') then 'Tokyo Gas'
             when regexp_contains(lower(payee), r'ﾊﾟｽﾓ') then 'PASMO'
             when regexp_contains(lower(payee), r'ﾌﾟﾗｲﾑｶｲﾋ') then 'Amazon Prime'
+            when regexp_contains(lower(payee), r'amazon') then 'Amazon'
             when regexp_contains(lower(payee), r'ソフトバンク') then 'Softbank'
-            when regexp_contains(lower(payee), r'SUNO INC') then 'Suno'
+            when regexp_contains(lower(payee), r'suno') then 'Suno'
             when regexp_contains(lower(payee), r'ココカラファインアプリ') then 'Cocokara Fine'
             when regexp_contains(lower(payee), r'ｼﾞﾔﾊﾟﾝﾋﾞﾊﾞﾚﾂｼﾞ') then 'Vending Machine'
             when regexp_contains(lower(payee), r'ﾌﾘﾎ-ﾚｽ') then 'Frijoles'
             when regexp_contains(lower(payee), r'スマートフィット') then 'Smart Fit'
-            when regexp_contains(payee, r'APPLE COM') then 'Apple'
-            when regexp_contains(payee, r'BOOKING') then 'Booking.com'
-            when regexp_contains(payee, r'NOKAIR') then 'Nok Air'
-            when regexp_contains(payee, r'サミット') then 'Summit'
+            when regexp_contains(lower(payee), r'apple') then 'Apple'
+            when regexp_contains(lower(payee), r'booking') then 'Booking.com'
+            when regexp_contains(lower(payee), r'nok') then 'Nok Air'
+            when regexp_contains(lower(payee), r'サミット|summit') then 'Summit'
+            when regexp_contains(lower(payee), r'family mart') then 'Family Mart'
+            when regexp_contains(lower(payee), r'new days') then 'New Days'
+            when regexp_contains(lower(payee), r'banh\s*mi\s*xin\s*chao') then 'Banh Mi Xin Chao'
+            when regexp_contains(lower(payee), r'楽天モバイル通信料|mobile') then 'Rakuten Mobile'
             else payee
-        end as payee_cleaned,
+        end as payee_standardized,
         item,
         category,
         case 
@@ -109,20 +114,24 @@ fill_ins as (
             else payment_method
         end as payment_method_complete,
         payee,
-        payee_cleaned,
+        payee_standardized,
         item,
         category,
         category_standardized,
         case
                 -- case when for credit card statement
-            when regexp_contains(payee_cleaned, r'Line Man') then 'Miscellaneous & Gifts'
-            when regexp_contains(payee_cleaned, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
-            when regexp_contains(payee_cleaned, r'Welpark|Cocokara Fine') then 'Household Supplies'
-            when regexp_contains(payee_cleaned, r'7-11|Lawson|Family Mart|Vending Machine|Frijoles') then 'Dining & Cafes'
-            when regexp_contains(payee_cleaned, r'Tokyo Gas|Softbank') then 'Housing & Utilities'
-            when regexp_contains(payee_cleaned, r'PASMO') then 'Transportation'
-            when regexp_contains(payee_cleaned, r'Smart Fit') then 'Health & Wellness'
-            when regexp_contains(payee_cleaned, r'Summit') then 'Groceries'
+            when regexp_contains(payee_standardized, r'Line Man') then 'Miscellaneous & Gifts'
+            when regexp_contains(payee_standardized, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
+            when regexp_contains(payee_standardized, r'Welpark|Cocokara Fine') then 'Household Supplies'
+            when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine|Frijoles|Sakaeya|New Days|Starbucks|Kuminoya|Hoshino|Banh Mi') then 'Dining & Cafes'
+            when regexp_contains(food_details, r'breakfast|lunch|dinner|snack') then 'Dining & Cafes'
+            when regexp_contains(payee_standardized, r'Tokyo Gas|Softbank') then 'Housing & Utilities'
+            when regexp_contains(payee_standardized, r'PASMO') then 'Transportation'
+            when regexp_contains(payee_standardized, r'Smart Fit') then 'Health & Wellness'
+            when regexp_contains(payee_standardized, r'Summit') then 'Groceries'
+            when regexp_contains(payee_standardized, r'Booking.com') then 'Travel & Experiences'
+            when regexp_contains(payee_standardized, r'Uniqlo') then 'Personal & Shopping'
+
             else category_standardized
         end as category_complete,
                 -- category_complete
@@ -130,7 +139,7 @@ fill_ins as (
                 -- case when for october
         tags,
         case 
-            when regexp_contains(payee_cleaned, r'7-11|Lawson|Family Mart|Vending Machine') then 'food: snack'
+            when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine') then 'food: snack'
             else tags
         end as tags_complete,
                 -- tags_complete
@@ -156,7 +165,13 @@ fill_ins as (
         essentiality as essentiality_complete,
             -- this might be tough. decide later
         recurrence_type,
-        recurrence_type as recurrence_type_complete,
+        case 
+            when regexp_contains(payee_standardized, r'^OpenAI|Tokyo Gas|Amazon|Softbank|Suno|Smart Fit|Apple') then 'Subscription/Automatic'
+            when regexp_contains(payee_standardized, r'^Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit|Frijoles|Summit|') then 'Variable / Occasional'
+            when regexp_contains(payee_standardized, r'^Booking|Nok') then 'One-Off'
+            when regexp_contains(payee_standardized, r'^Water Bill|Rent') then 'Recurring'
+            else null 
+        end as recurrence_type_complete,
             -- recurrence_type_complete
             -- for credit card statements
             -- for before november
