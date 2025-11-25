@@ -125,7 +125,7 @@ fill_ins as (
             when regexp_contains(payee_standardized, r'Welpark|Cocokara Fine') then 'Household Supplies'
             when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine|Frijoles|Sakaeya|New Days|Starbucks|Kuminoya|Hoshino|Banh Mi') then 'Dining & Cafes'
             when regexp_contains(food_details, r'breakfast|lunch|dinner|snack') then 'Dining & Cafes'
-            when regexp_contains(payee_standardized, r'Tokyo Gas|Softbank') then 'Housing & Utilities'
+            when regexp_contains(payee_standardized, r'Tokyo Gas|Softbank|Rakuten Mobile') then 'Housing & Utilities'
             when regexp_contains(payee_standardized, r'PASMO') then 'Transportation'
             when regexp_contains(payee_standardized, r'Smart Fit') then 'Health & Wellness'
             when regexp_contains(payee_standardized, r'Summit') then 'Groceries'
