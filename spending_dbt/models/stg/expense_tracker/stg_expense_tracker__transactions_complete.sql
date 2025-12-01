@@ -171,7 +171,7 @@ fill_ins as (
         recurrence_type,
         case 
             when regexp_contains(payee_standardized, r'^OpenAI|Tokyo Gas|Amazon|Softbank|Suno|Smart Fit|Apple') then 'Subscription/Automatic'
-            when regexp_contains(payee_standardized, r'^Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit|Frijoles|Summit|') then 'Variable / Occasional'
+            when regexp_contains(payee_standardized, r'^Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit|Frijoles|Summit') then 'Variable / Occasional'
             when regexp_contains(payee_standardized, r'^Booking|Nok') then 'One-Off'
             when regexp_contains(payee_standardized, r'^Water Bill|Rent') then 'Recurring'
             else null 
