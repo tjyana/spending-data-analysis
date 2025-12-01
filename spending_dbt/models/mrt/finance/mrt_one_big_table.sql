@@ -1,2 +1,28 @@
-select * 
+select 
+    transaction_date,
+    transaction_month,
+    transaction_month_year,
+    transaction_day_of_week,
+    is_weekend,
+    amount,
+    transaction_type,
+    income,
+    expense,
+    payment_method_complete,
+    payee_standardized,
+    item,
+    category_complete,
+    tags_complete,
+    food_details,
+    hobby_details,
+    trip_details,
+    social_complete,
+    store_type_complete,
+    purchase_channel_complete,
+    essentiality_complete,
+    recurrence_type_complete,
+    value_rating_complete,
+    notes,
+    source_system
+
 from {{ ref('int_finance__transactions_union') }}
