@@ -205,9 +205,9 @@ final as (
         end as store_type_complete,
         purchase_channel,
         case 
-            when regexp_contains(payee_standardized, r'Line Man|OpenAI|Tokyo Gas|PASMO|Amazon|Softbank|Suno|Smart Fit|Apple|Booking|Nok|Summit') then 'Online'
+            when regexp_contains(lower(payee_standardized), r'line man|openai|tokyo gas|pasmo|amazon|softbank|suno|smart fit|apple|booking|nok|summit') then 'Online'
             when regexp_contains(payee_standardized, r'Welpark|7-11|Lawson|Family Mart|Cocokara Fine|Vending Machine|Frijoles') then 'In-Store'
-            else null 
+            else purchase_channel
         end as purchase_channel_complete,
         essentiality,
         -- can't take into account conbini so will have to mark
@@ -221,7 +221,7 @@ final as (
         case 
             when regexp_contains(payee_standardized, r'OpenAI|Tokyo Gas|Amazon|Softbank|Suno|Smart Fit|Apple') then 'Subscription/Automatic'
             when regexp_contains(payee_standardized, r'Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit|Frijoles') then 'Variable / Occasional'
-            when regexp_contains(payee_standardized, r'Booking|Nok') then 'One-Off'
+            when regexp_contains(lower(payee_standardized), r'booking|nok') then 'One-Off'
             else null 
         end as recurrence_type_complete,
             -- recurrence_type_complete
