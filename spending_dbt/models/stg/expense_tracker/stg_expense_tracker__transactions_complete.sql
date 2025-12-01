@@ -174,7 +174,7 @@ fill_ins as (
             when regexp_contains(payee_standardized, r'^Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit|Frijoles|Summit') then 'Variable / Occasional'
             when regexp_contains(payee_standardized, r'^Booking|Nok') then 'One-Off'
             when regexp_contains(payee_standardized, r'^Water Bill|Rent') then 'Recurring'
-            else null 
+            else recurrence_type
         end as recurrence_type_complete,
             -- recurrence_type_complete
             -- for credit card statements
