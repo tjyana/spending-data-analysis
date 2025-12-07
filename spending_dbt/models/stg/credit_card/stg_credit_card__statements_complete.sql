@@ -41,7 +41,7 @@ derived_columns as (
         payee,
         -- subs. maybe make a diff CTE for this later
         case 
-            when regexp_contains(lower(payee), r'[Ll][Ii][Nn][Ee]\s*[Mm][Aa][Nn]') then 'Line Man'
+            when regexp_contains(lower(payee), r'[Ll][Ii][Nn][Ee]\s*[Mm][Aa][Nn]') or regexp_contains(trim(payee), r'LPTH*PF_LM') then 'Line Man'
             when regexp_contains(payee, r'OPENAI') then 'OpenAI'
             when regexp_contains(lower(payee), r'ｳｴﾙﾊﾟ-ｸ') then 'Welpark'
             when regexp_contains(lower(payee), r'セブン|ｾﾌﾞﾝ') then '7-11'
