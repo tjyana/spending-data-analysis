@@ -41,7 +41,7 @@ derived_columns as (
         payee,
         -- subs. maybe make a diff CTE for this later
         case 
-            when regexp_contains(lower(payee), r'[Ll][Ii][Nn][Ee]\s*[Mm][Aa][Nn]') or regexp_contains(trim(payee), r'LPTH*PF_LM') then 'Line Man'
+            when regexp_contains(lower(payee), r'[Ll][Ii][Nn][Ee]\s*[Mm][Aa][Nn]|lpth*pf') or regexp_contains(trim(payee), r'LPTH\*PF') then 'Line Man'
             when regexp_contains(payee, r'OPENAI') then 'OpenAI'
             when regexp_contains(lower(payee), r'ｳｴﾙﾊﾟ-ｸ') then 'Welpark'
             when regexp_contains(lower(payee), r'セブン|ｾﾌﾞﾝ') then '7-11'
@@ -58,9 +58,12 @@ derived_columns as (
             when regexp_contains(lower(payee), r'スマートフィット') then 'Smart Fit'
             when regexp_contains(lower(payee), r'apple') then 'Apple'
             when regexp_contains(lower(payee), r'booking') then 'Booking.com'
-            when regexp_contains(lower(payee), r'nok air') then 'Nok Air'
+            when regexp_contains(lower(payee), r'nok air|nokair') then 'Nok Air'
             when regexp_contains(lower(payee), r'サミット|summit') then 'Summit'
             when regexp_contains(lower(payee), r'楽天モバイル') then 'Rakuten Mobile'
+            when regexp_contains(lower(payee), r'ｽﾀ-ﾊﾞﾂｸｽ') then 'Starbucks'
+            when regexp_contains(lower(payee), r'ユニクロ') then 'Uniqlo'
+            when regexp_contains(lower(payee), r'AMAZON\.CO\.JP') then 'Amazon'            
             else trim(regexp_replace(regexp_replace(payee, r'(ＶＩＳＡ海外利用|ＶＩＳＡ国内利用|楽天ＳＰ)', ''), r'\s+', ' '))
         end as payee_standardized,
         item,
@@ -110,24 +113,28 @@ fill_ins as (
         payee,
         payee_standardized,
         item,
+        case 
+            when item is null and regexp_contains(payee_standardized, r'Line Man') then 'Delivery Order'
+            else item
+        end as item_fillin,
         category,
         category_standardized,
         case
                 -- case when for credit card statement
-                -- keep Amazon out of this
-            when regexp_contains(payee_standardized, r'Line Man') then 'Miscellaneous & Gifts'
-            when regexp_contains(payee_standardized, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
-            when regexp_contains(payee_standardized, r'Welpark|Cocokara Fine') then 'Household Supplies'
-            when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine|Frijoles') then 'Dining & Cafes'
-            when regexp_contains(payee_standardized, r'Tokyo Gas|Softbank|Rakuten Mobile') then 'Housing & Utilities'
-            when regexp_contains(payee_standardized, r'PASMO') then 'Transportation'
-            when regexp_contains(payee_standardized, r'Smart Fit') then 'Health & Wellness'
-            when regexp_contains(payee_standardized, r'Summit') then 'Groceries'
+                -- keep out list: Amazon, Starbucks, Uniqlo
+            when category is null and regexp_contains(payee_standardized, r'Line Man') then 'Miscellaneous & Gifts'
+            when category is null and regexp_contains(payee_standardized, r'OpenAI|Amazon Prime|Suno|Apple') then 'Media & Subscriptions'
+            when category is null and regexp_contains(payee_standardized, r'Welpark|Cocokara Fine') then 'Household Supplies'
+            when category is null and regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine|Frijoles') then 'Dining & Cafes'
+            when category is null and regexp_contains(payee_standardized, r'Tokyo Gas|Softbank|Rakuten Mobile') then 'Housing & Utilities'
+            when category is null and regexp_contains(payee_standardized, r'PASMO') then 'Transportation'
+            when category is null and regexp_contains(payee_standardized, r'Smart Fit') then 'Health & Wellness'
+            when category is null and regexp_contains(payee_standardized, r'Summit') then 'Groceries'
             else category_standardized
         end as category_complete,
         tags,
         case 
-            when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine') then 'food: snack'
+            when tags is null and regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine') then 'food: snack'
             else tags
         end as tags_complete,
         social,
