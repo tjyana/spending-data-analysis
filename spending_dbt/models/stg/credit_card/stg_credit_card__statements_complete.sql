@@ -60,6 +60,7 @@ derived_columns as (
             when regexp_contains(lower(payee), r'booking') then 'Booking.com'
             when regexp_contains(lower(payee), r'nok air') then 'Nok Air'
             when regexp_contains(lower(payee), r'サミット|summit') then 'Summit'
+            when regexp_contains(lower(payee), r'楽天モバイル') then 'Rakuten Mobile'
             else trim(regexp_replace(regexp_replace(payee, r'(ＶＩＳＡ海外利用|ＶＩＳＡ国内利用|楽天ＳＰ)', ''), r'\s+', ' '))
         end as payee_standardized,
         item,
