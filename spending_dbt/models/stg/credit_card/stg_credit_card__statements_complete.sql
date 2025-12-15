@@ -204,7 +204,7 @@ final as (
         store_type,
         store_type_standardized,
         case 
-            when regexp_contains(payee_standardized, r'Line Man|OpenAI|Tokyo Gas|PASMO|Amazon|Softbank|Suno|Smart Fit|Apple|Booking|Nok') then 'Everything else'
+            when regexp_contains(payee_standardized, r'Line Man|OpenAI|Tokyo Gas|PASMO|Amazon|Softbank|Suno|Smart Fit|Apple|Booking|Nok|Rakuten Mobile') then 'Everything else'
             when regexp_contains(payee_standardized, r'Welpark') then 'Drugstore'
             when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart') then 'Convenience Store'
             when regexp_contains(payee_standardized, r'Summit') then 'Grocery Store'
@@ -213,8 +213,8 @@ final as (
         end as store_type_complete,
         purchase_channel,
         case 
-            when regexp_contains(lower(payee_standardized), r'line man|openai|tokyo gas|pasmo|amazon|softbank|suno|smart fit|apple|booking|nok|summit') then 'Online'
-            when regexp_contains(payee_standardized, r'Welpark|7-11|Lawson|Family Mart|Cocokara Fine|Vending Machine|Frijoles') then 'In-Store'
+            when regexp_contains(lower(payee_standardized), r'line man|openai|tokyo gas|pasmo|amazon|softbank|suno|smart fit|apple|booking|nok|rakuten mobile') then 'Online'
+            when regexp_contains(payee_standardized, r'Welpark|7-11|Lawson|Family Mart|Cocokara Fine|Vending Machine|Frijoles|Summit') then 'In-Store'
             else purchase_channel
         end as purchase_channel_complete,
         essentiality,
@@ -222,12 +222,12 @@ final as (
         case 
             when regexp_contains(payee_standardized, r'Suno|Frijoles|Vending Machine') then 'Want'
             when regexp_contains(payee_standardized, r'Line Man|OpenAI|Amazon Prime|Apple|Booking|Nok|Smart Fit') then 'Nice-to-Have (Comfort Base)'
-            when regexp_contains(payee_standardized, r'Tokyo Gas|PASMO|Softbank|Summit') then 'Need (Base)'
+            when regexp_contains(payee_standardized, r'Tokyo Gas|PASMO|Softbank|Summit|Rakuten Mobile') then 'Need (Base)'
             else null 
         end as essentiality_complete,
         recurrence_type,
         case 
-            when regexp_contains(payee_standardized, r'OpenAI|Tokyo Gas|Amazon|Softbank|Suno|Smart Fit|Apple') then 'Subscription/Automatic'
+            when regexp_contains(payee_standardized, r'OpenAI|Tokyo Gas|Amazon|Softbank|Suno|Smart Fit|Apple|Rakuten Mobile') then 'Subscription/Automatic'
             when regexp_contains(payee_standardized, r'Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit|Frijoles') then 'Variable / Occasional'
             when regexp_contains(lower(payee_standardized), r'booking|nok') then 'One-Off'
             else null 
