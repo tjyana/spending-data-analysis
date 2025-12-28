@@ -6,7 +6,7 @@ spending_dbt:
       method: service-account
       project: spending-data-analysis         # your GCP project ID
       dataset: spending_dev                   # dbt models go here (dev)
-      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS', '') }}"
       location: asia-northeast1               # adjust if needed
       threads: 4
       timeout_seconds: 300
@@ -18,7 +18,7 @@ spending_dbt:
       method: service-account
       project: spending-data-analysis
       dataset: spending_prod                  # dbt models go here (prod)
-      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS', '') }}"
       location: asia-northeast1
       threads: 4
       timeout_seconds: 300
