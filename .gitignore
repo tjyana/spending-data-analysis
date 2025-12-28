@@ -21,3 +21,4 @@ logs/
 *.pdf
 *.csv
 *.log
+*.DS_STORE
