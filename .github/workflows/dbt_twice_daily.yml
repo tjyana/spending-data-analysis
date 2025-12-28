@@ -33,9 +33,11 @@ jobs:
           echo '${{ secrets.BQ_SERVICE_ACCOUNT_JSON }}' > /tmp/bq_sa.json
 
       - name: dbt debug
+        working-directory: spending_dbt
         run: |
           dbt debug --profiles-dir .
 
       - name: dbt build (dev)
+        working-directory: spending_dbt
         run: |
           dbt build --target dev
