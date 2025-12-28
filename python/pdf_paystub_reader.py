@@ -1,23 +1,3 @@
-# import pdfplumber
-# import pandas as pd
-
-# rows = []
-
-# with pdfplumber.open("statement.pdf") as pdf:
-#     for page in pdf.pages:
-#         table = page.extract_table()
-#         if not table:
-#             continue
-#         header, *data = table
-#         for row in data:
-#             # map row columns to your standard schema
-#             # e.g. date, description, amount, etc.
-#             rows.append(row)
-
-# df = pd.DataFrame(rows, columns=["date_raw", "description_raw", "amount_raw", "etc"])
-# # do cleaning here: parse dates, amounts, sign, etc.
-
-
 import pdfplumber
 import pandas as pd
 
