@@ -23,6 +23,7 @@ select
     recurrence_type_complete,
     value_rating_complete,
     notes,
+    anomaly,
     source_system
 
 from {{ ref('int_finance__transactions_union') }}
