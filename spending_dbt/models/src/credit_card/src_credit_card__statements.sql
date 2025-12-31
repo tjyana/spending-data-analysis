@@ -65,6 +65,7 @@ normalized as (
         trim(recurrence_type) as recurrence_type,
         value_rating as value_rating,
         trim(notes) as notes,
+        null as anomaly,
         trim(source_system) as source_system
     from renamed
 ),
@@ -89,6 +90,7 @@ type_cast as (
         cast(recurrence_type as string) as recurrence_type,
         cast(value_rating as int64) as value_rating,
         cast(notes as string) as notes,
+        cast(anomaly as string) as anomaly,
         cast(source_system as string) as source_system
     from normalized
 )
