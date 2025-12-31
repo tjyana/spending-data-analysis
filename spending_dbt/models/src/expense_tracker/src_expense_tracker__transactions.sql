@@ -22,6 +22,7 @@ with source as  (
         recurrence_type,
         value_rating,
         Random_memos,
+        big_purchase,
         'expense_tracker' as source_system
     from {{ source('raw_spending', 'expense_tracker') }}
     
@@ -47,6 +48,7 @@ renamed as (
         recurrence_type,
         value_rating,
         Random_memos as notes,
+        big_purchase as anomaly,
         source_system
     from source
 ),
@@ -80,6 +82,7 @@ normalized as (
         trim(recurrence_type) as recurrence_type,
         value_rating as value_rating,
         trim(notes) as notes,
+        trim(anomaly) as anomaly,
         source_system
     from renamed
 ),
@@ -104,6 +107,7 @@ type_cast as (
         cast(recurrence_type as string) as recurrence_type,
         cast(value_rating as int64) as value_rating,
         cast(notes as string) as notes,
+        cast(anomaly as string) as anomaly,
         cast(source_system as string) as source_system
     from normalized
 )
