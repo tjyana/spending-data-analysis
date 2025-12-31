@@ -91,6 +91,7 @@ derived_columns as (
         recurrence_type,
         value_rating,
         notes,
+        anomaly,
         source_system
     from src
 ),
@@ -184,6 +185,7 @@ fill_ins as (
         value_rating as value_rating_complete,
             -- changed in november. might be tough
         notes,
+        anomaly,
         source_system
     from derived_columns
 )
