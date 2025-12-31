@@ -34,10 +34,14 @@ models:
         +materialized: view
       expense_tracker:
         +materialized: view
+      thb:
+        +materialized: view
     stg:
       credit_card:
         +materialized: view
       expense_tracker:
+        +materialized: view
+      thb:
         +materialized: view
     int:
       finance:
