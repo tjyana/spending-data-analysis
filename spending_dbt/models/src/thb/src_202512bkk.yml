@@ -5,4 +5,4 @@ sources:
     database: spending-data-analysis
     schema: raw_spending          # BigQuery dataset name
     tables:
-      - name: 202512_BKK
+      - name: thb_202512bkk
