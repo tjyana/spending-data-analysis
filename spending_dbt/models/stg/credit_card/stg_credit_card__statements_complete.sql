@@ -18,6 +18,7 @@ src as (
 
 derived_columns as (
     select 
+        id_key,
         timestamp_datetime,
         date(timestamp_datetime) as transaction_date,
         format_datetime('%m', timestamp_datetime) as transaction_month,
@@ -92,6 +93,7 @@ derived_columns as (
 
 fill_ins as (
     select 
+        id_key,
         timestamp_datetime,
         transaction_date,
         transaction_month,
@@ -166,6 +168,7 @@ fill_ins as (
 
 final as (
     select 
+        id_key,
         timestamp_datetime,
         transaction_date,
         transaction_month,

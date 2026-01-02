@@ -4,6 +4,7 @@
 with source as  (
 
     select 
+        null as id_key,
         Timestamp,
         transaction_type,
         amount, 
@@ -30,6 +31,7 @@ with source as  (
 
 renamed as (
     select 
+        id_key,
         Timestamp as timestamp_raw,
         transaction_type,
         amount, 
@@ -56,6 +58,7 @@ renamed as (
 normalized as (
     select
         -- to deal with 2025/10/20 format
+        cast(id_key as string) as id_key,
         case
             -- YYYY/MM/DD (year-first)
             when regexp_contains(timestamp_raw, r'^\d{4}/') then parse_datetime('%Y/%m/%d %H:%M:%S', concat(timestamp_raw, ' 00:00:00'))
@@ -89,6 +92,7 @@ normalized as (
 
 type_cast as (
     select 
+        id_key,
         timestamp_datetime,
         cast(transaction_type as string) as transaction_type,
         cast(amount as int64) as amount, 

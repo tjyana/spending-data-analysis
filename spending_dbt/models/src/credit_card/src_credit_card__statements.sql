@@ -4,6 +4,7 @@
 with source as  (
 
     select 
+        id_key,
         date,
         payee,
         amount,
@@ -25,6 +26,7 @@ with source as  (
 
 renamed as (
     select 
+        id_key,
         date as timestamp_raw,
         payee,
         amount,
@@ -46,6 +48,7 @@ renamed as (
 normalized as (
     select
         -- to deal with 2025/10/20 format
+        id_key,
         datetime(timestamp_raw) as timestamp_datetime,
         'expense' as transaction_type,
         amount, 
@@ -72,6 +75,7 @@ normalized as (
 
 type_cast as (
     select 
+        cast(id_key as string) as id_key,
         timestamp_datetime,
         cast(transaction_type as string) as transaction_type,
         cast(amount as int64) as amount, 
