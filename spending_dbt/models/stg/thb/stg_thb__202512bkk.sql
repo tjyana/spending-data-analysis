@@ -1,0 +1,1 @@
+select * from {{ ref('src_thb__202512bkk') }}
