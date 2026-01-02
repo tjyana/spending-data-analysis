@@ -33,6 +33,7 @@ renamed as (
 
 normalized as (
     select
+        id_key,
         -- to deal with 2025/10/20 format
         timestamp_raw,
         transaction_type,
@@ -59,6 +60,7 @@ normalized as (
 
 type_cast as (
     select 
+        id_key,
         timestamp_raw,
         cast(transaction_type as string) as transaction_type,
         cast(amount as numeric) as amount, 
