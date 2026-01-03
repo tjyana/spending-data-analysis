@@ -63,7 +63,7 @@ normalized as (
 type_cast as (
     select 
         id_key,
-        timestamp_raw,
+        datetime(timestamp_raw) as timestamp_datetime,
         cast(transaction_type as string) as transaction_type,
         cast(amount as numeric) as amount, 
         cast(payment_method as string) as payment_method,
