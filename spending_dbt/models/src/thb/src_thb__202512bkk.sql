@@ -27,7 +27,8 @@ renamed as (
         value_rating,
         Random_memos as notes,
         anomaly_purchase as anomaly,
-        'thb' as source_system
+        'thb' as source_system,
+        JPY, 
     from src
 ),
 
@@ -54,7 +55,8 @@ normalized as (
         value_rating as value_rating,
         trim(notes) as notes,
         anomaly,
-        source_system
+        source_system,
+        JPY
     from renamed
 ),
 
@@ -80,7 +82,8 @@ type_cast as (
         cast(value_rating as int64) as value_rating,
         cast(notes as string) as notes,
         cast(anomaly as string) as anomaly,
-        cast(source_system as string) as source_system
+        cast(source_system as string) as source_system,
+        cast(JPY as numeric) as JPY
     from normalized
 )
 

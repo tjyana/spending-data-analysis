@@ -6,4 +6,4 @@ from {{ ref("stg_expense_tracker__transactions_complete") }}
 union all 
 
 select * 
-from {{ ref("stg_credit_card__statements_complete")}}
+from {{ ref("int_finance__credit_card_enriched")}}
