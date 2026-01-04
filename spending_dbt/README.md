@@ -17,14 +17,14 @@ Try running the following commands:
 
 thb models:
 
-src_thb__202512bkk 
+src_thb__202512bkk ✅
 Role: raw rename-only
 direct mapping from BigQuery source
 no logic
 no filtering
 no joins
 
-stg_thb__202512bkk 
+stg_thb__202512bkk ✅
 Role: standardized THB transactions
 cast types
 normalize column names
@@ -33,7 +33,7 @@ align to the 40-column contract
 ❗️This should not filter cash vs card
 ❗️This should not join to CC
 
-int_transactions__credit_card_enriched 
+int_transactions__credit_card_enriched　✅ 
 (current int_finance__credit_card_enriched that takes credit card entries from stg_thb and joins with cc statements) 
 Role: statement-driven card transactions enriched with THB context
 Takes: 
@@ -46,14 +46,14 @@ CC provides amount / dates
 ✅ good place for join logic
 ❌ should not include cash rows
 
-int_transactions__thb_cash 
+int_transactions__thb_cash 🚧
 (takes stg_thb and filters out cash only) 
 Role: THB cash-only transactions
 Takes:
 - stg_thb__202512bkk
 - filters to cash only
 
-int_transactions__all 
+int_transactions__all 🚧
 (current int_finance__transactions_union that union alls expense tracker, credit card enriched, and thb cash)
 Role: canonical ledger (union point)
 Requirements:
