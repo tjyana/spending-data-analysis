@@ -7,3 +7,8 @@ union all
 
 select * 
 from {{ ref("int_finance__credit_card_enriched")}}
+
+union all
+
+select *
+from {{ ref("int_finance_transactions__thb_cash")}}
