@@ -9,15 +9,18 @@ select
     when regexp_contains(format_date('%a', timestamp_datetime), r'Sat|Sun') then 1
     else 0
   end as is_weekend,
-  amount, 
+  case 
+    when payment_method like 'Cash' then JPY
+    else amount
+  end as amount, 
   transaction_type,
   case 
     when transaction_type = '💰income💰' then amount 
     else 0 
   end as income,  
   case 
-    when transaction_type = 'expense' or transaction_type is null then -amount 
-    else 0 
+    when payment_method like 'Cash' then -JPY
+    else -amount
   end as expense,
   payment_method,
   payment_method as payment_method_complete,
