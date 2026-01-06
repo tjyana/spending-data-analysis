@@ -2,7 +2,7 @@
 with 
 stg as (
     select *
-    from {{ ref('int_finance__transactions_union') }}
+    from {{ ref('int_transactions__all') }}
 
 ),
 
