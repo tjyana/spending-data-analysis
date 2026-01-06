@@ -7,7 +7,7 @@
 -- This makes your dashboard summaries much more meaningful — e.g., “40% of my spending goes to Joy & Exploration, but only 10% to Self-Care.”
 
 select *
-from {{ ref('int_finance__transactions_union') }}
+from {{ ref('int_transactions__all') }}
 
 -- group by lifestyle domain
 -- group by categories to group
