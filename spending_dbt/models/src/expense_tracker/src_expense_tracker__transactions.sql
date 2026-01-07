@@ -4,7 +4,7 @@
 with source as  (
 
     select 
-        null as id_key,
+        id_key,
         Timestamp,
         transaction_type,
         amount, 
@@ -23,7 +23,7 @@ with source as  (
         recurrence_type,
         value_rating,
         Random_memos,
-        big_purchase,
+        anomaly,
         'expense_tracker' as source_system
     from {{ source('raw_spending', 'expense_tracker') }}
     
@@ -50,7 +50,7 @@ renamed as (
         recurrence_type,
         value_rating,
         Random_memos as notes,
-        big_purchase as anomaly,
+        anomaly,
         source_system
     from source
 ),
