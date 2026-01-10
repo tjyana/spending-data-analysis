@@ -1,4 +1,5 @@
-select 
+select
+    id_key,
     transaction_date,
     transaction_month,
     transaction_month_year,
