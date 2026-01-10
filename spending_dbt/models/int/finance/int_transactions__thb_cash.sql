@@ -6,7 +6,7 @@ select
   transaction_month_year,
   transaction_day_of_week,
   is_weekend,
-  cast(JPY as numeric) as amount, -- doublecheck
+  amount, -- doublecheck
   transaction_type,
   income,
   expense,

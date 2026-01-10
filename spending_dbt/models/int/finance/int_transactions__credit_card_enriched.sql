@@ -58,8 +58,8 @@ select
   coalesce(et.anomaly, thb.anomaly, cc.anomaly) as anomaly,
   coalesce(et.source_system, thb.source_system, cc.source_system) as source_system
 
-
 from cc
+
 left join thb
   on cc.id_key = thb.id_key
 left join et 
