@@ -1,3 +1,6 @@
+tasks:
+- find missing thb data (94 rows but models only showing like 79?)
+
 Welcome to your new dbt project!
 
 ### Using the starter project
@@ -33,10 +36,10 @@ align to the 40-column contract
 ❗️This should not filter cash vs card
 ❗️This should not join to CC
 
-int_transactions__credit_card_enriched　✅ 
-(current int_finance__credit_card_enriched that takes credit card entries from stg_thb and joins with cc statements) 
+int_transactions__credit_card_enriched　✅
+(current int_finance__credit_card_enriched that takes credit card entries from stg_thb and joins with cc statements)
 Role: statement-driven card transactions enriched with THB context
-Takes: 
+Takes:
 - CC statements (stg)
 - THB rows with id_key
 outputs: canonical transactions rows
@@ -47,7 +50,7 @@ CC provides amount / dates
 ❌ should not include cash rows
 
 int_transactions__thb_cash 🚧
-(takes stg_thb and filters out cash only) 
+(takes stg_thb and filters out cash only)
 Role: THB cash-only transactions
 Takes:
 - stg_thb__202512bkk
