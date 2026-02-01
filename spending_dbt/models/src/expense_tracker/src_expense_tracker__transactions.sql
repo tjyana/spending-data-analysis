@@ -3,15 +3,15 @@
 
 with source as  (
 
-    select 
+    select
         null as id_key,
         Timestamp,
         transaction_type,
-        amount, 
+        amount,
         payment_method,
         payee,
         item,
-        category, 
+        category,
         tags,
         food_details,
         hobby_details,
@@ -19,26 +19,26 @@ with source as  (
         social,
         store_type,
         purchase_channel,
-        essentiality, 
+        essentiality,
         recurrence_type,
         value_rating,
         Random_memos,
-        big_purchase,
+        anomaly,
         'expense_tracker' as source_system
     from {{ source('raw_spending', 'expense_tracker') }}
-    
-), 
+
+),
 
 renamed as (
-    select 
+    select
         id_key,
         Timestamp as timestamp_raw,
         transaction_type,
-        amount, 
+        amount,
         payment_method,
         payee,
         item,
-        category, 
+        category,
         tags,
         food_details,
         hobby_details,
@@ -46,11 +46,11 @@ renamed as (
         social,
         store_type,
         purchase_channel,
-        essentiality, 
+        essentiality,
         recurrence_type,
         value_rating,
         Random_memos as notes,
-        big_purchase as anomaly,
+        anomaly,
         source_system
     from source
 ),
@@ -69,11 +69,11 @@ normalized as (
             else NULL
         end as timestamp_datetime,
         transaction_type,
-        amount, 
+        amount,
         trim(payment_method) as payment_method,
         trim(payee) as payee,
         trim(item) as item,
-        trim(category) as category, 
+        trim(category) as category,
         trim(tags) as tags,
         trim(food_details) as food_details,
         trim(hobby_details) as hobby_details,
@@ -81,7 +81,7 @@ normalized as (
         trim(social) as social,
         trim(store_type) as store_type,
         trim(purchase_channel) as purchase_channel,
-        trim(essentiality) as essentiality, 
+        trim(essentiality) as essentiality,
         trim(recurrence_type) as recurrence_type,
         value_rating as value_rating,
         trim(notes) as notes,
@@ -91,15 +91,15 @@ normalized as (
 ),
 
 type_cast as (
-    select 
+    select
         id_key,
         timestamp_datetime,
         cast(transaction_type as string) as transaction_type,
-        cast(amount as int64) as amount, 
+        cast(amount as int64) as amount,
         cast(payment_method as string) as payment_method,
         cast(payee as string) as payee,
         cast(item as string) as item,
-        cast(category as string) as category, 
+        cast(category as string) as category,
         cast(tags as string) as tags,
         cast(food_details as string) as food_details,
         cast(hobby_details as string) as hobby_details,
@@ -116,7 +116,5 @@ type_cast as (
     from normalized
 )
 
-select * 
+select *
     from type_cast
-
-

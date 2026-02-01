@@ -1,6 +1,6 @@
 -- join credit card statements with expense tracker data
 
-with all as (
+with final as (
 
 select *
 from {{ ref("stg_expense_tracker__transactions_complete") }}
@@ -51,11 +51,12 @@ select
   purchase_channel_complete, -- fix later
   essentiality,
   essentiality_complete, -- fix later
-  safe_cast(recurrence_type as int64) as recurrence_type,
+  recurrence_type,
   recurrence_type_complete, -- fix later
   value_rating,
   value_rating_complete, -- fix later
   notes,
   anomaly,
   source_system
-from all
+
+from final
