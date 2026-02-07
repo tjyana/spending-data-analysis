@@ -1,24 +1,24 @@
-select 
+select
   id_key,
   timestamp_datetime,
   date(timestamp_datetime) as transaction_date,
   format_datetime('%m', timestamp_datetime) as transaction_month,
-  format_datetime('%m/%Y', timestamp_datetime) as transaction_month_year,
+  format_datetime('%Y/%m', timestamp_datetime) as transaction_month_year,
   format_datetime('%a', timestamp_datetime) as transaction_day_of_week,
-  case 
+  case
     when regexp_contains(format_date('%a', timestamp_datetime), r'Sat|Sun') then 1
     else 0
   end as is_weekend,
-  case 
+  case
     when payment_method like 'Cash' then JPY
     else amount
-  end as amount, 
+  end as amount,
   transaction_type,
-  case 
-    when transaction_type = '💰income💰' then amount 
-    else 0 
-  end as income,  
-  case 
+  case
+    when transaction_type = '💰income💰' then amount
+    else 0
+  end as income,
+  case
     when payment_method like 'Cash' then -JPY
     else -amount
   end as expense,
@@ -26,7 +26,7 @@ select
   payment_method as payment_method_complete,
   payee,
   payee as payee_standardized, -- fix later
-  item, 
+  item,
   category,
   category as category_standardized, -- fix later
   category as category_complete, -- fix later
@@ -37,7 +37,7 @@ select
   trip_details,
   social,
   social as social_complete, -- fix later
-  store_type, 
+  store_type,
   store_type as store_type_standardized, -- fix later
   store_type as store_type_complete, -- fix later
   purchase_channel,
