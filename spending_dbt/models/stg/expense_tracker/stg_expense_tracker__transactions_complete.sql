@@ -9,39 +9,39 @@
     -- merge and attach to cleaning pipeline: merge and normalize dates (done), populate other columns (need to build)
     -- automate merge process
 
-with 
+with
 
 src as (
-    select * 
+    select *
     from {{ ref('src_expense_tracker__transactions') }}
-), 
+),
 
 derived_columns as (
-    select 
+    select
         id_key,
         timestamp_datetime,
         date(timestamp_datetime) as transaction_date,
         format_datetime('%m', timestamp_datetime) as transaction_month,
         format_datetime('%a', timestamp_datetime) as transaction_day_of_week,
-        format_datetime('%m/%Y', timestamp_datetime) as transaction_month_year,
-        case 
+        format_datetime('%Y/%m', timestamp_datetime) as transaction_month_year,
+        case
             when regexp_contains(format_date('%a', timestamp_datetime), r'Sat|Sun') then 1
             else 0
         end as is_weekend,
         amount,
         transaction_type,
-        case 
-            when transaction_type = '💰income💰' then amount 
-            else 0 
+        case
+            when transaction_type = '💰income💰' then amount
+            else 0
         end as income,
-        case 
-            when transaction_type = 'expense' then -amount 
-            else 0 
+        case
+            when transaction_type = 'expense' then -amount
+            else 0
         end as expense,
         payment_method,
         payee,
         -- subs. maybe make a diff CTE for this later
-        case 
+        case
             when regexp_contains(lower(payee), r'[Ll][Ii][Nn][Ee]\s*[Mm][Aa][Nn]') then 'Line Man'
             when regexp_contains(lower(payee), r'openai') then 'OpenAI'
             when regexp_contains(lower(payee), r'ｳｴﾙﾊﾟ-ｸ') then 'Welpark'
@@ -70,8 +70,8 @@ derived_columns as (
         end as payee_standardized,
         item,
         category,
-        case 
-            when lower(trim(category)) = 'rent/utilities' then 'Housing & Utilities' 
+        case
+            when lower(trim(category)) = 'rent/utilities' then 'Housing & Utilities'
             when lower(trim(category)) = 'entertainment & subscriptions' then 'Media & Subscriptions'
             when trim(category) = 'Hobbies (Coffee, Running, Plants)' then 'Hobbies'
             when trim(category) = 'Miscellaneous / Gifts' then 'Miscellaneous & Gifts'
@@ -83,7 +83,7 @@ derived_columns as (
         trip_details,
         social,
         store_type,
-        case 
+        case
             when lower(trim(store_type)) = 'restaurant' then 'Restaurant / Food Stall'
             else store_type
         end as store_type_standardized,
@@ -98,7 +98,7 @@ derived_columns as (
 ),
 
 fill_ins as (
-    select 
+    select
         id_key,
         timestamp_datetime,
         transaction_date,
@@ -145,7 +145,7 @@ fill_ins as (
                 -- case when for credit card statements
                 -- case when for october
         tags,
-        case 
+        case
             when regexp_contains(payee_standardized, r'7-11|Lawson|Family Mart|Vending Machine') and tags is null then 'food: snack'
             else tags
         end as tags_complete,
@@ -172,7 +172,7 @@ fill_ins as (
         essentiality as essentiality_complete,
             -- this might be tough. decide later
         recurrence_type,
-        case 
+        case
             when regexp_contains(payee_standardized, r'^OpenAI|Tokyo Gas|Amazon|Softbank|Suno|Smart Fit|Apple') then 'Subscription/Automatic'
             when regexp_contains(payee_standardized, r'^Line Man|Welpark|7-11|Lawson|Family Mart|PASMO|Cocokara Fine|Vending Machine|Summit|Frijoles|Summit') then 'Variable / Occasional'
             when regexp_contains(payee_standardized, r'^Booking|Nok') then 'One-Off'
