@@ -2,7 +2,6 @@
     -- convert the date column to a date type
 
 with source as  (
-
     select
         null as id_key,
         Timestamp,
