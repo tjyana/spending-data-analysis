@@ -3,7 +3,7 @@ name: dbt_twice_daily
 on:
   schedule:
     - cron: "0 0 * * *"   # 09:00
-    - cron: "0 12 * * *"  # 21:00 
+    - cron: "0 12 * * *"  # 21:00
   workflow_dispatch:
 
 jobs:
@@ -40,10 +40,10 @@ jobs:
         run: |
           dbt debug --profiles-dir .
 
-      - name: dbt build (dev)
+      - name: dbt build (prod)
         working-directory: spending_dbt
         env:
           DBT_PROFILES_DIR: .
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/bq_sa.json
         run: |
-          dbt build --target dev
+          dbt build --target prod
