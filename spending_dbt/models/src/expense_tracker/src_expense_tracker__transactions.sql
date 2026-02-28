@@ -3,7 +3,7 @@
 
 with source as  (
     select
-        null as id_key,
+        id_key,
         Timestamp,
         transaction_type,
         amount,
