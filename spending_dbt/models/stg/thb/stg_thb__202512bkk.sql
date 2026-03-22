@@ -10,7 +10,7 @@ select
     else 0
   end as is_weekend,
   case
-    when payment_method like 'Cash' then JPY
+    when payment_method like 'Cash' then round(JPY, 0)
     else amount
   end as amount,
   transaction_type,
